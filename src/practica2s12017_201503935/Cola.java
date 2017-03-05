@@ -107,11 +107,12 @@ public class Cola extends javax.swing.JFrame {
         // TODO add your handling code here:
         String dat=dato.getText();
         incertar(dat);
+        dato.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        System.out.println("Dato eliminado: "+getString2("eliminarcol"));
+        System.out.println(getString2("eliminarcol"));
         System.out.println(getString2("listarCola"));
     }//GEN-LAST:event_jButton2ActionPerformed
 

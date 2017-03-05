@@ -23,6 +23,9 @@ class Pila:
 	def esVacia(self):
 		return self.raiz==None
 
+	def nueva(self):
+		self.raiz=None
+
 	def push(self,valor):
 		nuevo=NodoPila()
 		nuevo.setValor(valor)
@@ -44,8 +47,9 @@ class Pila:
 	def listar(self):
 		aux=self.raiz
 		i=0
-		print("-----------")
+		mostrar=""
 		while aux!=None:
-			print (i," Dato: ",aux.getValor())
+			mostrar = mostrar + str(aux.getValor()) + " ---> "
 			aux=aux.getSiguiente()
 			i+=1
+		return mostrar

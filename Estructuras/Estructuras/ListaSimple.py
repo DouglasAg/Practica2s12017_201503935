@@ -25,6 +25,9 @@ class Lista:
 		self.inicio=None
 		self.tamanio=0
 
+	def nueva(self):
+		self.inicio=None
+		self.tamanio=0
 
 	def esVacio(self):
 		return self.inicio==None
@@ -71,7 +74,7 @@ class Lista:
 						break
 					aux2=aux2.getSiguiente()
 					cont+= 1
-				aux2.setSiguiente(aux.siguiente)
+				aux2.setSiguiente(aux.getSiguiente())
 				return "Elemento eliminado en indice " + str(cont)
 
 
@@ -79,11 +82,13 @@ class Lista:
 		if self.esVacio()!=True:
 			aux=self.inicio
 			i=0
-			print ("----------------------")
+			mostrar=""
 			while aux!=None:
-				print (i," Dato: ",aux.getValor())
+				mostrar = mostrar + str(aux.getValor()) + " ---> "
+
 				aux=aux.getSiguiente()
 				i+=1
+		return mostrar
 
 	def buscar(self,ref):
 		aux=self.inicio
@@ -102,3 +107,5 @@ class Lista:
 
 	def getInicio(self):
 		return self.inicio
+
+
