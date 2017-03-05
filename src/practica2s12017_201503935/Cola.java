@@ -5,6 +5,17 @@
  */
 package practica2s12017_201503935;
 
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author ddani
@@ -16,6 +27,7 @@ public class Cola extends javax.swing.JFrame {
      */
     public Cola() {
         initComponents();
+        System.out.println(getString2("nuevaCola"));
     }
 
     /**
@@ -28,7 +40,7 @@ public class Cola extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        dato = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
@@ -37,13 +49,23 @@ public class Cola extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 24)); // NOI18N
         jLabel1.setText("Cola");
 
-        jTextField1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
+        dato.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
 
         jButton1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
         jButton1.setText("queue");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
         jButton2.setText("dequeue");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -56,7 +78,7 @@ public class Cola extends javax.swing.JFrame {
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(63, 63, 63)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(dato, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(143, 143, 143)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -70,7 +92,7 @@ public class Cola extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(34, 34, 34)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dato, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
                 .addGap(18, 18, 18)
@@ -80,6 +102,18 @@ public class Cola extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String dat=dato.getText();
+        incertar(dat);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Dato eliminado: "+getString2("eliminarcol"));
+        System.out.println(getString2("listarCola"));
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -115,11 +149,55 @@ public class Cola extends javax.swing.JFrame {
             }
         });
     }
+    
+    public static OkHttpClient webClient = new OkHttpClient();
+    
+    public void incertar(String num){
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("dato", num)
+                .build();
+        String r = getString("AgregarCola", formBody); 
+        System.out.println(r);
+
+        String r2 = getString2("listarCola"); 
+        System.out.println(r2);
+        
+    }
+    
+    public static String getString2(String metodo){
+        String retorno="";
+        try {
+            URL url = new URL("http://0.0.0.0:5000/"+metodo);
+            Request request = new Request.Builder().url(url).build();
+            Response response = webClient.newCall(request).execute();
+            retorno = response.body().string();
+        } catch (Exception ex) {
+            Logger.getLogger(Cola.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retorno;
+    }
+    
+    public static String getString(String metodo, RequestBody formBody) {
+
+        
+        try {
+            URL url = new URL("http://0.0.0.0:5000/" + metodo);
+            Request request = new Request.Builder().url(url).post(formBody).build();
+            Response response = webClient.newCall(request).execute();
+            String response_string = response.body().string();
+            return response_string;
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Cola.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField dato;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

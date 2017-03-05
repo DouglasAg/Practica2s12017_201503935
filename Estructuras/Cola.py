@@ -56,14 +56,12 @@ class Cola:
 		if self.esVacio()!=True:
 			aux=self.inicio
 			i=0
-			print ("----------------------")
+			mostrar=""
 			while aux!=None:
-				print (i," Dato: ",aux.getValor())
+				mostrar = mostrar + str(aux.getValor()) + " ---> "
 				aux=aux.getSiguiente()
 				i+=1
+			return mostrar
 
 	def getInicio(self):
 		return self.inicio
-
-
-		
