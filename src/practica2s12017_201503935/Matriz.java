@@ -5,6 +5,20 @@
  */
 package practica2s12017_201503935;
 
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author ddani
@@ -28,7 +42,7 @@ public class Matriz extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        ag = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jTextField2 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
@@ -42,10 +56,15 @@ public class Matriz extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 24)); // NOI18N
         jLabel1.setText("Matriz");
 
-        jTextField1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
+        ag.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
 
         jButton1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
         jButton1.setText("Agregar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jTextField2.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
 
@@ -78,7 +97,7 @@ public class Matriz extends javax.swing.JFrame {
                         .addGap(80, 80, 80)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ag, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
@@ -101,7 +120,7 @@ public class Matriz extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(26, 26, 26)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ag, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -121,6 +140,24 @@ public class Matriz extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            // TODO add your handling code here:
+            String completo = ag.getText();
+            char a = completo.charAt(0);
+            String letra=String.valueOf(a);
+            
+            System.out.println(letra);
+            StringTokenizer st = new StringTokenizer(completo,"@");
+            String dato=st.nextToken();
+            String domonio=st.nextToken();
+            incertar(domonio,letra,dato);
+            imagen("Matriz",getString2("grafMat"));
+        } catch (IOException ex) {
+            Logger.getLogger(Matriz.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -157,13 +194,98 @@ public class Matriz extends javax.swing.JFrame {
         });
     }
 
+    public static OkHttpClient webClient = new OkHttpClient();
+
+    public void incertar(String dom, String letra, String dato) {
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("dato", dom)
+                .add("dato1", letra)
+                .add("dato2", dato)
+                .build();
+        String r = getString("incertarmat", formBody);
+        System.out.println(r);
+
+     
+
+    }
+
+    
+    
+    public static String getString2(String metodo) {
+        String retorno = "";
+        try {
+            URL url = new URL("http://0.0.0.0:5000/" + metodo);
+            Request request = new Request.Builder().url(url).build();
+            Response response = webClient.newCall(request).execute();
+            retorno = response.body().string();
+        } catch (IOException ex) {
+
+        }
+        return retorno;
+    }
+
+    public static String getString(String metodo, RequestBody formBody) {
+
+        try {
+            URL url = new URL("http://0.0.0.0:5000/" + metodo);
+            Request request = new Request.Builder().url(url).post(formBody).build();
+            Response response = webClient.newCall(request).execute();
+            String response_string = response.body().string();
+            return response_string;
+
+        } catch (IOException ex) {
+
+        }
+        return null;
+    }
+    
+    
+    public String imagen(String palabra,String cuerpo) throws IOException {
+
+        String nombre = palabra;
+        cuerpo(cuerpo);
+        String cmd = "";
+        cmd += "dot ";
+        cmd += " -Tpng ";
+        cmd += "C:\\EDD\\" + nombre + ".txt ";
+        cmd += " -o ";
+        cmd += "C:\\EDD\\" + nombre + ".png";
+        Runtime rt = Runtime.getRuntime();
+        rt.exec(cmd);
+        return nombre + ".png";
+    }
+
+    public void cuerpo(String cuerpo) {
+        String nombreArchivo = "C:\\EDD\\matriz.txt";
+        FileWriter fw = null;
+        String cadena = "Digraph g{\nrankdir=LR\n";      
+        cadena += "	node [shape=circle];\n";
+        cadena += " 	node [style=filled];\n";
+        cadena += " 	node [fillcolor=\"#EEEEEE\"];\n";
+        cadena += " 	node [color=lightblue];\n";
+        cadena += " 	edge [color=\"#31CEF0\"]; ";
+        try {
+            fw = new FileWriter(nombreArchivo);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter salArch = new PrintWriter(bw);
+
+            cadena += cuerpo;
+
+            cadena += " }";
+            salArch.println(cadena);
+            salArch.close();
+        } catch (IOException ex) {
+
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField ag;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;

@@ -10,8 +10,10 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,15 +107,25 @@ public class Cola extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String dat=dato.getText();
+        String dat = dato.getText();
         incertar(dat);
         dato.setText("");
+        try {
+            imagen("cola",getString2("grafcola"));
+        } catch (IOException ex) {
+            Logger.getLogger(Cola.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         System.out.println(getString2("eliminarcol"));
         System.out.println(getString2("listarCola"));
+        try {
+            imagen("cola",getString2("grafcola"));
+        } catch (IOException ex) {
+            Logger.getLogger(Cola.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -150,45 +162,81 @@ public class Cola extends javax.swing.JFrame {
             }
         });
     }
+
+    
+    public String imagen(String palabra,String cuerpo) throws IOException {
+
+        String nombre = palabra;
+        cuerpo(cuerpo);
+        String cmd = "";
+        cmd += "dot ";
+        cmd += " -Tpng ";
+        cmd += "C:\\EDD\\" + nombre + ".txt ";
+        cmd += " -o ";
+        cmd += "C:\\EDD\\" + nombre + ".png";
+        Runtime rt = Runtime.getRuntime();
+        rt.exec(cmd);
+        return nombre + ".png";
+    }
+
+    public void cuerpo(String cuerpo) {
+        String nombreArchivo = "C:\\EDD\\cola.txt";
+        FileWriter fw = null;
+        String cadena = "Digraph g{\nrankdir=LR\n";      
+        cadena += "	node [shape=circle];\n";
+        cadena += " 	node [style=filled];\n";
+        cadena += " 	node [fillcolor=\"#EEEEEE\"];\n";
+        cadena += " 	node [color=lightblue];\n";
+        cadena += " 	edge [color=\"#31CEF0\"]; ";
+        try {
+            fw = new FileWriter(nombreArchivo);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter salArch = new PrintWriter(bw);
+
+            cadena += cuerpo;
+
+            cadena += " }";
+            salArch.println(cadena);
+            salArch.close();
+        } catch (IOException ex) {
+
+        }
+    }
     
     public static OkHttpClient webClient = new OkHttpClient();
-    
-    public void incertar(String num){
+
+    public void incertar(String num) {
         RequestBody formBody = new FormEncodingBuilder()
                 .add("dato", num)
                 .build();
-        String r = getString("AgregarCola", formBody); 
+        String r = getString("AgregarCola", formBody);
         System.out.println(r);
 
-        String r2 = getString2("listarCola"); 
+        String r2 = getString2("listarCola");
         System.out.println(r2);
-        
+
     }
-    
-    public static String getString2(String metodo){
-        String retorno="";
+
+    public static String getString2(String metodo) {
+        String retorno = "";
         try {
-            URL url = new URL("http://0.0.0.0:5000/"+metodo);
+            URL url = new URL("http://0.0.0.0:5000/" + metodo);
             Request request = new Request.Builder().url(url).build();
             Response response = webClient.newCall(request).execute();
             retorno = response.body().string();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             Logger.getLogger(Cola.class.getName()).log(Level.SEVERE, null, ex);
         }
         return retorno;
     }
-    
-    public static String getString(String metodo, RequestBody formBody) {
 
-        
+    public static String getString(String metodo, RequestBody formBody) {
         try {
             URL url = new URL("http://0.0.0.0:5000/" + metodo);
             Request request = new Request.Builder().url(url).post(formBody).build();
             Response response = webClient.newCall(request).execute();
             String response_string = response.body().string();
             return response_string;
-            
-            
         } catch (IOException ex) {
             Logger.getLogger(Cola.class.getName()).log(Level.SEVERE, null, ex);
         }

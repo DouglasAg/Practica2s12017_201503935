@@ -2,12 +2,14 @@ from flask import Flask, request
 from Estructuras import Cola
 from Estructuras import ListaSimple
 from Estructuras import Pila
+from Estructuras import Matriz
 
 app=Flask("Practica_2")
 
 Col=Cola.Cola()
 Pil=Pila.Pila()
 Lis=ListaSimple.Lista()
+Mat=Matriz.Matriz()
 
 @app.route('/Conectar')
 def conectar():
@@ -34,6 +36,11 @@ def nueva():
 	Col.nueva()
 	return "Cola nueva"
 
+@app.route("/grafcola")
+def grafcola():
+	graf=Col.graficar2()
+	return graf
+
 @app.route('/AgregarPila',methods=['POST'])
 def agregarpila():
 	num=str(request.form['dato'])
@@ -54,6 +61,11 @@ def elimpil():
 def nuevapila():
 	Pil.nueva()
 	return "Pila nueva"
+
+@app.route("/grafpila")
+def grafpila():
+	graf=Pil.graficar2()
+	return graf
 
 @app.route("/AgregarLista", methods=['POST'])
 def Agregarlis():
@@ -82,6 +94,25 @@ def buscarlis():
 def nuevalista():
 	Lis.nueva()
 	return "Lista nueva"
+
+@app.route("/graflista")
+def graflista():
+	graf=Lis.graficar2()
+	return graf
+
+@app.route("/incertarmat", methods=['POST'])
+def incertarmat():
+	dom=str(request.form['dato'])
+	letra=str(request.form['dato1'])
+	dato=str(request.form['dato2'])
+	Mat.ingresarAMatriz(dom, letra, dato)
+	return "ingresado"
+
+
+@app.route("/grafMat")
+def grafmat():
+	graf=Mat.graficar()
+	return graf
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0')

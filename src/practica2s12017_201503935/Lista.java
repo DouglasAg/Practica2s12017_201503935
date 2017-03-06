@@ -10,7 +10,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -138,6 +144,11 @@ public class Lista extends javax.swing.JFrame {
         String ag = agregar.getText();
         incertar(ag);
         agregar.setText("");
+        try {
+            imagen("lista",getString2("graflista"));
+        } catch (IOException ex) {
+            Logger.getLogger(Lista.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -145,6 +156,11 @@ public class Lista extends javax.swing.JFrame {
         String bor = borrar.getText();
         eliminar(bor);
         borrar.setText("");
+        try {
+            imagen("lista",getString2("graflista"));
+        } catch (IOException ex) {
+            Logger.getLogger(Lista.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -152,6 +168,11 @@ public class Lista extends javax.swing.JFrame {
         String bus = buscar.getText();
         buscar(bus);
         buscar.setText("");
+        try {
+            imagen("lista",getString2("graflista"));
+        } catch (IOException ex) {
+            Logger.getLogger(Lista.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
     public static OkHttpClient webClient = new OkHttpClient();
 
@@ -166,7 +187,7 @@ public class Lista extends javax.swing.JFrame {
 
     }
 
-    public void buscar(String num){
+    public void buscar(String num) {
         RequestBody formBody = new FormEncodingBuilder()
                 .add("dato", num)
                 .build();
@@ -175,8 +196,8 @@ public class Lista extends javax.swing.JFrame {
         String r2 = getString2("listarLis");
         System.out.println(r2);
     }
-    
-    public void eliminar(String num){
+
+    public void eliminar(String num) {
         RequestBody formBody = new FormEncodingBuilder()
                 .add("dato", num)
                 .build();
@@ -185,7 +206,7 @@ public class Lista extends javax.swing.JFrame {
         String r2 = getString2("listarLis");
         System.out.println(r2);
     }
-    
+
     public static String getString2(String metodo) {
         String retorno = "";
         try {
@@ -193,10 +214,49 @@ public class Lista extends javax.swing.JFrame {
             Request request = new Request.Builder().url(url).build();
             Response response = webClient.newCall(request).execute();
             retorno = response.body().string();
-        } catch (Exception ex) {
-            
+        } catch (IOException ex) {
+
         }
         return retorno;
+    }
+
+    public String imagen(String palabra,String cuerpo) throws IOException {
+
+        String nombre = palabra;
+        cuerpo(cuerpo);
+        String cmd = "";
+        cmd += "dot ";
+        cmd += " -Tpng ";
+        cmd += "C:\\EDD\\" + nombre + ".txt ";
+        cmd += " -o ";
+        cmd += "C:\\EDD\\" + nombre + ".png";
+        Runtime rt = Runtime.getRuntime();
+        rt.exec(cmd);
+        return nombre + ".png";
+    }
+
+    public void cuerpo(String cuerpo) {
+        String nombreArchivo = "C:\\EDD\\lista.txt";
+        FileWriter fw = null;
+        String cadena = "Digraph g{\nrankdir=LR\n";      
+        cadena += "	node [shape=circle];\n";
+        cadena += " 	node [style=filled];\n";
+        cadena += " 	node [fillcolor=\"#EEEEEE\"];\n";
+        cadena += " 	node [color=lightblue];\n";
+        cadena += " 	edge [color=\"#31CEF0\"]; ";
+        try {
+            fw = new FileWriter(nombreArchivo);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter salArch = new PrintWriter(bw);
+
+            cadena += cuerpo;
+
+            cadena += " }";
+            salArch.println(cadena);
+            salArch.close();
+        } catch (IOException ex) {
+
+        }
     }
 
     public static String getString(String metodo, RequestBody formBody) {

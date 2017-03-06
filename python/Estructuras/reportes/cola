@@ -1,0 +1,10 @@
+digraph {
+	graph [fontsize=16 rankdir=LR]
+	node [color=lightblue fillcolor="#EEEEEE" shape=circle style=filled]
+	edge [color="#31CEF0"]
+		"'0'" [label=2222]
+		"'1'" [label=19]
+			"'0'" -> "'1'"
+		"'2'" [label=18]
+			"'1'" -> "'2'"
+}

@@ -10,7 +10,10 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,13 +112,22 @@ public class Pila extends javax.swing.JFrame {
         String datpil=datopila.getText();
         incertar(datpil);
         datopila.setText("");
-        
+        try {
+            imagen("pila",getString2("grafpila"));
+        } catch (IOException ex) {
+            Logger.getLogger(Pila.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         System.out.println(getString2("eliminarpila"));
         System.out.println(getString2("listarPila"));
+        try {
+            imagen("pila",getString2("grafpila"));
+        } catch (IOException ex) {
+            Logger.getLogger(Pila.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -153,6 +165,45 @@ public class Pila extends javax.swing.JFrame {
         });
     }
     
+    public String imagen(String palabra,String cuerpo) throws IOException {
+
+        String nombre = palabra;
+        cuerpo(cuerpo);
+        String cmd = "";
+        cmd += "dot ";
+        cmd += " -Tpng ";
+        cmd += "C:\\EDD\\" + nombre + ".txt ";
+        cmd += " -o ";
+        cmd += "C:\\EDD\\" + nombre + ".png";
+        Runtime rt = Runtime.getRuntime();
+        rt.exec(cmd);
+        return nombre + ".png";
+    }
+
+    public void cuerpo(String cuerpo) {
+        String nombreArchivo = "C:\\EDD\\pila.txt";
+        FileWriter fw = null;
+        String cadena = "Digraph g{\nrankdir=LR\n";      
+        cadena += "	node [shape=circle];\n";
+        cadena += " 	node [style=filled];\n";
+        cadena += " 	node [fillcolor=\"#EEEEEE\"];\n";
+        cadena += " 	node [color=lightblue];\n";
+        cadena += " 	edge [color=\"#31CEF0\"]; ";
+        try {
+            fw = new FileWriter(nombreArchivo);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter salArch = new PrintWriter(bw);
+
+            cadena += cuerpo;
+
+            cadena += " }";
+            salArch.println(cadena);
+            salArch.close();
+        } catch (IOException ex) {
+
+        }
+    }
+    
     public static OkHttpClient webClient = new OkHttpClient();
     
     public void incertar(String num){
@@ -174,7 +225,7 @@ public class Pila extends javax.swing.JFrame {
             Request request = new Request.Builder().url(url).build();
             Response response = webClient.newCall(request).execute();
             retorno = response.body().string();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             
         }
         return retorno;
@@ -192,7 +243,7 @@ public class Pila extends javax.swing.JFrame {
             
             
         } catch (IOException ex) {
-            Logger.getLogger(Cola.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
         return null;
     }
